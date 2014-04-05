@@ -24,8 +24,7 @@ CFLAGS		=$(CFLAGS_DEBUG)
 #CFLAGS		=$(CFLAGS_RELEASE)
 
 #linker flags; standard stuff
-#IMPORTANT: -lm should ALWAYS come first
-LDFLAGS		=-lm -lSDL2 -lSDL2_image -lSDL2_ttf
+LDFLAGS		=-lSDL2
 
 #don't touch these lines; they automatically
 # glob all C++ files so no editing is needed. At all.
@@ -75,11 +74,11 @@ init:
 
 $(OUTPUT): $(BLOBS)
 	@echo "[Link] $< -> $@"
-	@$(CC) $(LDFLAGS) $(BLOBS) -o $@ $(REDIRECT)
+	$(CC) $(BLOBS) $(LDFLAGS) -o $@ $(REDIRECT)
 
 .cpp.o:
 	@echo "[Comp] $< -> $@"
-	@$(CC) $(CFLAGS) -c $< $(REDIRECT)
+	$(CC) $(CFLAGS) -c $< $(REDIRECT)
 
 clean:
 	@echo "Cleaning up..."

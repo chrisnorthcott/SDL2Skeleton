@@ -1,5 +1,4 @@
 #include "state.h"
-#include "globals.h"
 
 int currentState = 0;
 

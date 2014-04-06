@@ -5,6 +5,7 @@
 #include "state.h"
 #include "graphics.h"
 #include "errors.h"
+#include "math.h"
 
 using namespace std;
 

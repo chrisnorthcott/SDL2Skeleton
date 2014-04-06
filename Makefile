@@ -8,7 +8,7 @@ CC		=g++
 #TODO: add auto debian & APK packaging
 # I shall add Android as a build target in the future.
 TAROPTS		=cjvf
-TAR		=tar
+TAR			=tar
 DISTEXT		=.bz2
 
 #C++ standard: use C++11 by default for extra
@@ -60,10 +60,12 @@ WD		:=$(shell pwd)
 #		//do generic fallback stuff
 #
 # -D$(OPSYS) is provided mainly for ease of porting to a different platform.
-DEFINES_ALL	=-DOS=$(OPSYS) -D$(OPSYS)
+#
+# -Remove -DSSESQRT if your compiler doesn't have SSE support!
+DEFINES_ALL		=-DOS=$(OPSYS) -D$(OPSYS)
 DEFINES_DEBUG	=$(DEFINES_ALL) -DDEBUG
 DEFINES_RELEASE	=$(DEFINES_ALL) -DRELEASE
-DEFINES		=$(DEFINES_DEBUG)
+DEFINES			=$(DEFINES_DEBUG)
 
 all: init $(SOURCES) $(OUTPUT) final
 
@@ -78,7 +80,7 @@ $(OUTPUT): $(BLOBS)
 
 .cpp.o:
 	@echo "[Comp] $< -> $@"
-	$(CC) $(CFLAGS) -c $< $(REDIRECT)
+	$(CC) $(CFLAGS) $(DEFINES) -c $< $(REDIRECT)
 
 clean:
 	@echo "Cleaning up..."

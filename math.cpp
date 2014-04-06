@@ -54,7 +54,7 @@ inline double fsqrt(const double d)
 	const float dh = d * 0.5f;
 	union { float x; int i; } U;
 	U.x = d;
-	U.i = 1597463007 - (U.i >> 1);					//approximation step
+	U.i = 0x5f375a86 - (U.i >> 1);					//approximation step
 	return d * U.x * (1.5f - dh * U.x * U.x);	//narrow it down (Newton's)
 #endif
 }

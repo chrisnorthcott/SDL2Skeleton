@@ -13,6 +13,24 @@ using namespace std;
 bool errorState;
 int errorCode = 0;
 
+void ExitState()
+{
+	SDL_Quit();
+	exit(errorCode);
+}
+
+void DummyState()
+{
+	SDL_Delay(50);
+}
+
+void DummyRenderCallback()
+{
+	//Just to make sure we're alive here...
+	cout << ".";
+	ClearScreen(0,0,0,255);
+}
+
 void InitState()
 {
 	if(SDL_Init(SDL_INIT_EVERYTHING) < 0)
@@ -30,24 +48,14 @@ void InitState()
 		cout << "Init OK, proceeding" << endl;
 		SwitchState(ST_DUMMY);
 	}
-}
-
-void ExitState()
-{
-	SDL_Quit();
-	exit(errorCode);
-}
-
-void DummyState()
-{
-	ClearScreen(0,0,0,255);
-	SDL_Delay(50);
+	//throw up a dummy render callback - just clear the screen
+	SetRenderCallback(DummyRenderCallback);
 }
 
 STATEDEF states[4] = {
 	{"None"			, NULL},
 	{"Initialisation"	, InitState },
-	{"Shutdown"		, ExitState },
+	{"Shutdown"			, ExitState },
 	{"Dummy State"		, DummyState }
 };
 
@@ -56,8 +64,14 @@ int main(int argc, char **argv)
 	SwitchState(ST_INIT);
 	while(currentState != ST_EXIT)
 	{
+		//MainLoop(): deal with logic, AI, physics etc for each frame
 		void (*MainLoop)() = states[currentState].callback; 
 		MainLoop();
+
+		//we deal with graphics seperately
+		RenderCallback();
+		SDL_RenderPresent(renderer);
+
 		if(errorState){
 			cout << "An error has occured, code " << errorCode 
 				<< endl;

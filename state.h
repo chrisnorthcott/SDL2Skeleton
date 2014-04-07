@@ -10,6 +10,8 @@
 
 void SwitchState(int);
 
+#define APP_TITLE "SDL2Skeleton"
+
 typedef struct STATEDEF
 {
         char name[50];

@@ -16,8 +16,8 @@ DISTEXT		=.bz2
 CSTD		=gnu++0x
 
 #different CFLAGS for different targets
-CFLAGS_DEBUG	=-DDEBUG -g -Wall -O0 -std=$(CSTD)
-CFLAGS_RELEASE	=-DDEBUG -O3 -mmmx -msse -std=$(CSTD)
+CFLAGS_DEBUG	=-g -Wall -O0 -std=$(CSTD)
+CFLAGS_RELEASE	=-O3 -mmmx -msse -std=$(CSTD)
 
 #select your target here
 CFLAGS		=$(CFLAGS_DEBUG)
@@ -37,7 +37,7 @@ REDIRECT_CMD	=1>/dev/null
 REDIRECT	=$(REDIRECT_CMD)
 
 #output file name (the final executable)
-OUTPUT		=a.out
+OUTPUT		=SDL2Skeleton./
 
 #version
 VERSION		=0.0.1

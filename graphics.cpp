@@ -8,6 +8,7 @@ using namespace std;
 
 SDL_Window 		*window;
 SDL_Renderer	*renderer;
+void (*RenderCallback)();
 
 bool GraphicsInit()
 {
@@ -66,7 +67,6 @@ void ClearScreen(int r, int g, int b, int a)
 {
 	SDL_SetRenderDrawColor(renderer, r, g, b, a);
 	SDL_RenderClear(renderer);
-	SDL_RenderPresent(renderer);
 }
 
 Sprite::Sprite(const char *filename)
@@ -82,6 +82,47 @@ Sprite::Sprite(const char *filename)
 	Sprite::tex = image;
 	Sprite::w = w;
 	Sprite::h = h;
-	Sprite::x = 0;
-	Sprite::y = 0;
+	Sprite::transform = Vector2(0,0);
+	Sprite::scale = Vector2(1,1);
+	Sprite::rotate = 0.0f;
+	Sprite::velocity = Vector2(0,0);
 }
+
+void Sprite::Rotate(float angle)
+{
+	rotate += angle;
+}
+
+void Sprite::Transform(Vector2 t)
+{
+	this->transform = this->transform + t;
+}
+
+void Sprite::Scale(Vector2 s)
+{
+	this->scale = s;
+}
+
+void Sprite::Render()
+{
+	SDL_Rect dst;
+	SDL_Point center;
+	dst.x = this->transform.x;
+	dst.y = this->transform.y;
+	dst.w = this->w * this->scale.x;
+	dst.h = this->h * this->scale.y;
+	center.x = this->w / 2;
+	center.y = this->h / 2;
+	if(SDL_RenderCopyEx(renderer, this->tex, NULL, 
+		&dst, this->rotate, &center, SDL_FLIP_NONE) < 0)
+	{
+		std::cout << "Couldn't render sprite: " << SDL_GetError() << endl;
+		SwitchState(ST_EXIT);
+	}
+}
+
+void SetRenderCallback(void (*callback)())
+{
+	RenderCallback = callback;
+}
+

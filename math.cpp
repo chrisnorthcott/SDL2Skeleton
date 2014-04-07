@@ -187,6 +187,12 @@ Vector2::Vector2(float vx, float vy)
 	Vector2::y = vy;	
 }
 
+Vector2::Vector2()
+{
+	Vector2::x = 0;
+	Vector2::y = 0;	
+}
+
 /*
 	Addition
 */
@@ -251,4 +257,50 @@ float Vector2::Angle(const Vector2& v)
 	Vector2 u = *this;
 	float dotProduct = u * v; 
 	return facos(dotProduct);
+}
+
+/*
+	QuadraticCurve constructor.
+	Defines a simple quadratic (Bezier) curve given an initial point,
+	a midpoint and and endpoint.
+
+	See http://en.wikipedia.org/wiki/B%C3%A9zier_curve#Quadratic_curves
+*/
+QuadraticCurve::QuadraticCurve(Point initial, Point middle, Point end)
+{
+	QuadraticCurve::initial = initial;
+	QuadraticCurve::middle = middle;
+	QuadraticCurve::end = end;
+}
+
+/*
+	Interpolation along the curve.
+	Given a percentage and a coordinate find the % point along the 
+	line between P1 and P2.
+*/
+float QuadraticCurve::Interpolate(float x, float y, float percentage)
+{
+	float delta = y - x;
+	return x + (delta * percentage);
+}
+
+/*
+	GetPointAt, the meat of the class ;)
+	Given a percentage along this curve, get the second order interpolation
+	(ie the interpolation of the interpolation) along the curve given t.
+*/
+Point QuadraticCurve::GetPointAt(float percentage)
+{
+	//interpolate between initial->middle
+	float xa = this->Interpolate(this->initial.x, this->middle.x, percentage);
+	float ya = this->Interpolate(this->initial.y, this->middle.y, percentage);
+
+	//interpolate between middle->end
+	float xb = this->Interpolate(this->middle.x, this->end.x, percentage);
+	float yb = this->Interpolate(this->middle.y, this->end.y, percentage);
+
+	//calculate final point
+	return Point(
+		this->Interpolate(xa, xb, percentage),
+		this->Interpolate(ya, yb, percentage));
 }

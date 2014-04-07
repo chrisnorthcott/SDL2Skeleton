@@ -1,13 +1,13 @@
 
 #include <iostream>
+#include <vector>
 #include "graphics.h"
+#include "state.h"
 
 using namespace std;
 
-SDL_Window 	*window;
+SDL_Window 		*window;
 SDL_Renderer	*renderer;
-
-char ErrorString[255];
 
 bool GraphicsInit()
 {
@@ -17,7 +17,7 @@ bool GraphicsInit()
 		SDL_WINDOW_FULLSCREEN_DESKTOP,
 		&window, &renderer) < 0)
 	{
-		cout << "Couldn't initialise graphics" << endl;
+		cout << "Couldn't initialise graphics:" << SDL_GetError() << endl;
 		return false;
 	}
 
@@ -46,6 +46,12 @@ bool GraphicsInit()
 		}
 		cout << "] " << endl;
 	}
+
+	cout << "Image Loader init" << endl;
+	if(!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG))
+	{
+		cout << "Couldn't initialise image loader: " << IMG_GetError() << endl;
+	}
 	
 	return true;
 }
@@ -61,4 +67,21 @@ void ClearScreen(int r, int g, int b, int a)
 	SDL_SetRenderDrawColor(renderer, r, g, b, a);
 	SDL_RenderClear(renderer);
 	SDL_RenderPresent(renderer);
+}
+
+Sprite::Sprite(const char *filename)
+{
+	SDL_Texture *image = IMG_LoadTexture(renderer, filename);
+	if(image == NULL)
+	{
+		std::cout << "FAILED to load " << filename << "!";
+		SwitchState(ST_EXIT);
+	}
+	int w, h;
+	SDL_QueryTexture(image, NULL, NULL, &w, &h);
+	Sprite::tex = image;
+	Sprite::w = w;
+	Sprite::h = h;
+	Sprite::x = 0;
+	Sprite::y = 0;
 }

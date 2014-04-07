@@ -24,7 +24,7 @@ CFLAGS		=$(CFLAGS_DEBUG)
 #CFLAGS		=$(CFLAGS_RELEASE)
 
 #linker flags; standard stuff
-LDFLAGS		=-lSDL2
+LDFLAGS		=-lSDL2 -lSDL2_image
 
 #don't touch these lines; they automatically
 # glob all C++ files so no editing is needed. At all.

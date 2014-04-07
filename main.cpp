@@ -2,10 +2,11 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 
+#include "math.h"
 #include "state.h"
 #include "graphics.h"
 #include "errors.h"
-#include "math.h"
+
 
 using namespace std;
 

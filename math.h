@@ -1,6 +1,7 @@
-#include <vector>
+#ifndef _MATH2D_H
+#define _MATH2D_H
 
-using namespace std;
+#include <vector>
 
 inline float array_min(float *a);
 inline float array_max(float *a);
@@ -16,6 +17,15 @@ class Point
 		float y;	
 };
 
+class QuadraticCurve
+{
+	public:
+		QuadraticCurve(Point initial, Point middle, Point end);
+		Point GetPointAt(float percentage);
+		float Interpolate(float x, float y, float percentage);
+		Point initial, middle, end;
+};
+
 class Line
 {
 	public:
@@ -27,17 +37,10 @@ class Line
 		bool Intersects(const Line& l);
 };
 
-class Polygon
-{
-	public:
-		Polygon();
-		vector<Point> vertices;
-		int numVertices;
-};
-
 class Vector2
 {
 	public:
+		Vector2();
 		Vector2(float, float);
 		Vector2 operator+(const Vector2& v) const;
 		Vector2 operator-(const Vector2& v) const;
@@ -51,9 +54,5 @@ class Vector2
 		float y;
 };
 
-//class BoundingBox
-//{
-//	public:
-//		BoundingBox(const Polygon&);
-//		vector<Point&> box;
-//};
+
+#endif

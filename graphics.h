@@ -11,17 +11,19 @@ extern void (*RenderCallback)();
 
 class Sprite
 {
-	Sprite(const char *filename);
-	void Render();
+public:
+	Sprite();
+	Sprite(const char *name, const char *filename);
+	void Render(SDL_Renderer *rend);
 	void Rotate(float angle);
 	void Transform(Vector2 t);
 	void Scale(Vector2 s);
+	char name[100];
 	SDL_Texture *tex;
 	int w, h;
 	float rotate;
 	Vector2 scale;
 	Vector2 transform;
-	Vector2 velocity;
 };
 
 bool GraphicsInit();

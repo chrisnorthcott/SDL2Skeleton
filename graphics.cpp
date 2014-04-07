@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <vector>
+#include <SDL2/SDL.h>
 #include "graphics.h"
 #include "state.h"
 
@@ -69,8 +70,11 @@ void ClearScreen(int r, int g, int b, int a)
 	SDL_RenderClear(renderer);
 }
 
-Sprite::Sprite(const char *filename)
+Sprite::Sprite(const char *name, const char *filename)
 {
+#ifdef DEBUG
+	cout << "[L] " << name << " <- " << filename << endl; 
+#endif
 	SDL_Texture *image = IMG_LoadTexture(renderer, filename);
 	if(image == NULL)
 	{
@@ -78,6 +82,7 @@ Sprite::Sprite(const char *filename)
 		SwitchState(ST_EXIT);
 	}
 	int w, h;
+	strncpy(Sprite::name, name, 100);
 	SDL_QueryTexture(image, NULL, NULL, &w, &h);
 	Sprite::tex = image;
 	Sprite::w = w;
@@ -85,7 +90,11 @@ Sprite::Sprite(const char *filename)
 	Sprite::transform = Vector2(0,0);
 	Sprite::scale = Vector2(1,1);
 	Sprite::rotate = 0.0f;
-	Sprite::velocity = Vector2(0,0);
+}
+
+Sprite::Sprite()
+{
+
 }
 
 void Sprite::Rotate(float angle)
@@ -103,7 +112,7 @@ void Sprite::Scale(Vector2 s)
 	this->scale = s;
 }
 
-void Sprite::Render()
+void Sprite::Render(SDL_Renderer *rend)
 {
 	SDL_Rect dst;
 	SDL_Point center;
@@ -113,10 +122,16 @@ void Sprite::Render()
 	dst.h = this->h * this->scale.y;
 	center.x = this->w / 2;
 	center.y = this->h / 2;
+#ifdef DEBUG_MORE
+	cout << "[R " << this->name << "] @ " << dst.w << "x" << dst.h << "+"
+		<<  dst.x << "x" << dst.y << ", th " << this->rotate << ", "
+		<< "cen " << center.x << "x" << center.y << endl;
+#endif
 	if(SDL_RenderCopyEx(renderer, this->tex, NULL, 
 		&dst, this->rotate, &center, SDL_FLIP_NONE) < 0)
 	{
-		std::cout << "Couldn't render sprite: " << SDL_GetError() << endl;
+		std::cout << "Couldn't render sprite '" << this->name << "':" 
+			<< SDL_GetError() << endl;
 		SwitchState(ST_EXIT);
 	}
 }

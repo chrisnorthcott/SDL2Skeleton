@@ -37,7 +37,7 @@ REDIRECT_CMD	=1>/dev/null
 REDIRECT	=$(REDIRECT_CMD)
 
 #output file name (the final executable)
-OUTPUT		=SDL2Skeleton./
+OUTPUT		=SDL2Skeleton
 
 #version
 VERSION		=0.0.1
@@ -94,5 +94,5 @@ dist: clean
 		./*	
 	@echo "Look in dist/ for your package."
 final:
-	@echo "Built $(OUTPUT), $(shell wc -c a.out | cut -f1 -d ' ') bytes."
+	@echo "Built $(OUTPUT), $(shell wc -c $(OUTPUT) | cut -f1 -d ' ') bytes."
  

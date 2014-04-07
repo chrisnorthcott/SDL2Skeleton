@@ -7,7 +7,6 @@
 #include "graphics.h"
 #include "errors.h"
 
-
 using namespace std;
 
 bool errorState;
@@ -21,13 +20,11 @@ void ExitState()
 
 void DummyState()
 {
-	SDL_Delay(50);
+	SDL_Delay(10);
 }
 
 void DummyRenderCallback()
 {
-	//Just to make sure we're alive here...
-	cout << ".";
 	ClearScreen(0,0,0,255);
 }
 

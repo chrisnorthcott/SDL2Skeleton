@@ -13,7 +13,7 @@ void (*RenderCallback)();
 
 bool GraphicsInit()
 {
-	cout << "Graphics Init" << endl;
+	cout << "Initialising graphics...";
 
 	if(SDL_CreateWindowAndRenderer(0, 0,
 		SDL_WINDOW_FULLSCREEN_DESKTOP,
@@ -49,12 +49,19 @@ bool GraphicsInit()
 		cout << "] " << endl;
 	}
 
-	cout << "Image Loader init" << endl;
+	cout << "Initialising image loader...";
 	if(!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG))
 	{
 		cout << "Couldn't initialise image loader: " << IMG_GetError() << endl;
 	}
-	
+	cout << "OK" << endl;
+
+	cout << "Initialising font loader...";
+	if(TTF_Init() < 0)
+	{
+		cout << "Couldn't initialise font loader: " << TTF_GetError() << endl;
+	}
+	cout << "OK" << endl;	
 	return true;
 }
 
@@ -87,7 +94,7 @@ Sprite::Sprite(const char *name, const char *filename)
 	Sprite::tex = image;
 	Sprite::w = w;
 	Sprite::h = h;
-	Sprite::transform = Vector2(0,0);
+	Sprite::translate = Vector2(0,0);
 	Sprite::scale = Vector2(1,1);
 	Sprite::rotate = 0.0f;
 }
@@ -102,9 +109,9 @@ void Sprite::Rotate(float angle)
 	rotate += angle;
 }
 
-void Sprite::Transform(Vector2 t)
+void Sprite::Translate(Vector2 t)
 {
-	this->transform = this->transform + t;
+	this->translate = this->translate + t;
 }
 
 void Sprite::Scale(Vector2 s)
@@ -116,8 +123,8 @@ void Sprite::Render(SDL_Renderer *rend)
 {
 	SDL_Rect dst;
 	SDL_Point center;
-	dst.x = this->transform.x;
-	dst.y = this->transform.y;
+	dst.x = this->translate.x;
+	dst.y = this->translate.y;
 	dst.w = this->w * this->scale.x;
 	dst.h = this->h * this->scale.y;
 	center.x = this->w / 2;
@@ -134,6 +141,76 @@ void Sprite::Render(SDL_Renderer *rend)
 			<< SDL_GetError() << endl;
 		SwitchState(ST_EXIT);
 	}
+}
+
+Text::Text(){};
+Text::Text(char *text, TTF_Font *font)
+{
+	strncpy(Text::text, text, 1024);
+	Text::font = font;
+	Text::color = (SDL_Color){ 255, 255, 255, 255 };	//white by default
+	Text::rotate = 0;
+	Text::scale = Vector2(1,1);
+	Text::translate = Vector2(0,0);
+}
+
+void Text::Render(SDL_Renderer *rend)
+{
+	//first render the text to a texture
+	SDL_Surface *tmpSfc = TTF_RenderText_Blended(this->font, 
+		this->text, this->color);
+	if(!tmpSfc)
+	{
+		std::cout << "Couldn't TTF_RenderText_Blended: " <<
+			TTF_GetError() << endl;
+	}
+	this->tex = SDL_CreateTextureFromSurface(rend, tmpSfc);
+	if(!this->tex)
+	{
+		std::cout << "Couldn't SDL_CreateTextureFromSurface: " <<
+			SDL_GetError() << endl;
+	}
+	SDL_QueryTexture(tex, NULL, NULL, &this->w, &this->h);
+	SDL_Rect dst;
+	SDL_Point center;
+	dst.x = this->translate.x;
+	dst.y = this->translate.y;
+	dst.w = this->w * this->scale.x;
+	dst.h = this->h * this->scale.y;
+	center.x = this->w / 2;
+	center.y = this->h / 2;
+#ifdef DEBUG_MORE
+	cout << "[R " << this->text << "] @ " << dst.w << "x" << dst.h << "+"
+		<<  dst.x << "x" << dst.y << ", th " << this->rotate << ", "
+		<< "cen " << center.x << "x" << center.y << endl;
+#endif
+	if(SDL_RenderCopyEx(rend, this->tex, NULL, 
+		&dst, this->rotate, &center, SDL_FLIP_NONE) < 0)
+	{
+		std::cout << "Couldn't render text '" << this->text << "':" 
+			<< SDL_GetError() << endl;
+		SwitchState(ST_EXIT);
+	}		
+}
+
+void Text::Rotate(float angle)
+{
+	rotate += angle;
+}
+
+void Text::Translate(Vector2 t)
+{
+	this->translate = this->translate + t;
+}
+
+void Text::Scale(Vector2 s)
+{
+	this->scale = s;
+}
+
+void Text::SetColor(SDL_Color c)
+{
+	this->color = c;
 }
 
 void SetRenderCallback(void (*callback)())

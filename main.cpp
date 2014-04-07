@@ -26,6 +26,7 @@ void DummyState()
 void DummyRenderCallback()
 {
 	ClearScreen(0,0,0,255);
+	char iter[10];
 }
 
 void InitState()

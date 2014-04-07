@@ -1,12 +1,14 @@
 #ifndef _STATE_H
 #define _STATE_H
 
-#define ST_NONE         0
-#define ST_INIT         1
-#define ST_EXIT         2 
-#define ST_DUMMY	3
-//add your own states below
-#define ST_SOMETHING	4
+enum STATES {
+	ST_NONE,
+	ST_INIT,
+	ST_EXIT,
+	ST_DUMMY,
+	//add your own states below
+	ST_SOMETHING
+};
 
 void SwitchState(int);
 

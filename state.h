@@ -17,7 +17,10 @@ void SwitchState(int);
 typedef struct STATEDEF
 {
         char name[50];
-        void (*callback)(void);
+        bool initialised;
+        void (*initCallback)(void);
+        void (*renderCallback)(void);
+        void (*mainCallback)(void);
 } STATEDEF;
 
 extern int 	currentState;

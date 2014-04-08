@@ -61,7 +61,7 @@ bool GraphicsInit()
 	{
 		cout << "Couldn't initialise font loader: " << TTF_GetError() << endl;
 	}
-	cout << "OK" << endl;	
+	cout << "OK" << endl;
 	return true;
 }
 
@@ -77,6 +77,8 @@ void ClearScreen(int r, int g, int b, int a)
 	SDL_RenderClear(renderer);
 }
 
+Sprite::Sprite(){}
+
 Sprite::Sprite(const char *name, const char *filename)
 {
 #ifdef DEBUG
@@ -89,7 +91,6 @@ Sprite::Sprite(const char *name, const char *filename)
 		SwitchState(ST_EXIT);
 	}
 	int w, h;
-	strncpy(Sprite::name, name, 100);
 	SDL_QueryTexture(image, NULL, NULL, &w, &h);
 	Sprite::tex = image;
 	Sprite::w = w;
@@ -99,27 +100,22 @@ Sprite::Sprite(const char *name, const char *filename)
 	Sprite::rotate = 0.0f;
 }
 
-Sprite::Sprite()
-{
-
-}
-
-void Sprite::Rotate(float angle)
+void IRenderable::Rotate(float angle)
 {
 	rotate += angle;
 }
 
-void Sprite::Translate(Vector2 t)
+void IRenderable::Translate(Vector2 t)
 {
 	this->translate = this->translate + t;
 }
 
-void Sprite::Scale(Vector2 s)
+void IRenderable::Scale(Vector2 s)
 {
 	this->scale = s;
 }
 
-void Sprite::Render(SDL_Renderer *rend)
+void IRenderable::Render(SDL_Renderer *rend)
 {
 	SDL_Rect dst;
 	SDL_Point center;
@@ -129,22 +125,18 @@ void Sprite::Render(SDL_Renderer *rend)
 	dst.h = this->h * this->scale.y;
 	center.x = this->w / 2;
 	center.y = this->h / 2;
-#ifdef DEBUG_MORE
-	cout << "[R " << this->name << "] @ " << dst.w << "x" << dst.h << "+"
-		<<  dst.x << "x" << dst.y << ", th " << this->rotate << ", "
-		<< "cen " << center.x << "x" << center.y << endl;
-#endif
 	if(SDL_RenderCopyEx(renderer, this->tex, NULL, 
 		&dst, this->rotate, &center, SDL_FLIP_NONE) < 0)
 	{
-		std::cout << "Couldn't render sprite '" << this->name << "':" 
+		std::cout << "Couldn't render sprite:" 
 			<< SDL_GetError() << endl;
 		SwitchState(ST_EXIT);
 	}
 }
 
-Text::Text(){};
-Text::Text(char *text, TTF_Font *font)
+Text::Text(){}
+
+Text::Text(const char *text, TTF_Font *font, SDL_Color color)
 {
 	strncpy(Text::text, text, 1024);
 	Text::font = font;
@@ -152,65 +144,24 @@ Text::Text(char *text, TTF_Font *font)
 	Text::rotate = 0;
 	Text::scale = Vector2(1,1);
 	Text::translate = Vector2(0,0);
-}
+	SDL_Surface *tmpSfc = TTF_RenderText_Blended(font, 
+		text, color);
 
-void Text::Render(SDL_Renderer *rend)
-{
-	//first render the text to a texture
-	SDL_Surface *tmpSfc = TTF_RenderText_Blended(this->font, 
-		this->text, this->color);
 	if(!tmpSfc)
 	{
 		std::cout << "Couldn't TTF_RenderText_Blended: " <<
 			TTF_GetError() << endl;
 	}
-	this->tex = SDL_CreateTextureFromSurface(rend, tmpSfc);
-	if(!this->tex)
+	Text::tex = SDL_CreateTextureFromSurface(renderer, tmpSfc);
+	if(!Text::tex)
 	{
 		std::cout << "Couldn't SDL_CreateTextureFromSurface: " <<
 			SDL_GetError() << endl;
 	}
-	SDL_QueryTexture(tex, NULL, NULL, &this->w, &this->h);
-	SDL_Rect dst;
-	SDL_Point center;
-	dst.x = this->translate.x;
-	dst.y = this->translate.y;
-	dst.w = this->w * this->scale.x;
-	dst.h = this->h * this->scale.y;
-	center.x = this->w / 2;
-	center.y = this->h / 2;
-#ifdef DEBUG_MORE
-	cout << "[R " << this->text << "] @ " << dst.w << "x" << dst.h << "+"
-		<<  dst.x << "x" << dst.y << ", th " << this->rotate << ", "
-		<< "cen " << center.x << "x" << center.y << endl;
-#endif
-	if(SDL_RenderCopyEx(rend, this->tex, NULL, 
-		&dst, this->rotate, &center, SDL_FLIP_NONE) < 0)
-	{
-		std::cout << "Couldn't render text '" << this->text << "':" 
-			<< SDL_GetError() << endl;
-		SwitchState(ST_EXIT);
-	}		
-}
-
-void Text::Rotate(float angle)
-{
-	rotate += angle;
-}
-
-void Text::Translate(Vector2 t)
-{
-	this->translate = this->translate + t;
-}
-
-void Text::Scale(Vector2 s)
-{
-	this->scale = s;
-}
-
-void Text::SetColor(SDL_Color c)
-{
-	this->color = c;
+	int qw, qh;
+	SDL_QueryTexture(tex, NULL, NULL, &qw, &qh);
+	Text::w = qw;
+	Text::h = qh;
 }
 
 void SetRenderCallback(void (*callback)())

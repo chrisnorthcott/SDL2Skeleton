@@ -36,9 +36,7 @@ public:
 	ICollidable();
 	ICollidable(Physics p, std::vector<ICollidable> collidableObjects);
 	std::vector<ICollidable> Collides();
-	ICollidable CollidesWith(ICollidable ic);
-	bool CollidesWith(Line l);
-	bool CollidesWith(QuadraticCurve qc);
+	bool CollidesWith(ICollidable ic);
 	Physics p;
 	BoundingPolygon bp;
 };
